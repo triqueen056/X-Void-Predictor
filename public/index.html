@@ -110,7 +110,7 @@
 
             // Ini nembak ke API Python lo tadi
             try {
-                const response = await fetch('/api/predict?seed=' + document.getElementById('seedInput').value);
+                const response = await fetch('/api/index?seed=' + document.getElementById('seedInput').value);
                 const data = await response.json();
                 
                 gridContainer.innerHTML = '';
