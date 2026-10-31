@@ -41,8 +41,9 @@
             border: 1px solid #2a3f4d;
             color: #fff;
             border-radius: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             outline: none;
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -55,6 +56,7 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 20px;
         }
         button:hover {
             background-color: #00cc66;
@@ -63,7 +65,6 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
-            margin-top: 20px;
             justify-content: center;
         }
         .cell {
@@ -96,6 +97,7 @@
         <div class="subtitle">Stake Mines Pattern Generator v2.0</div>
         
         <input type="text" id="seedInput" placeholder="Masukin Server Seed Hash (Bohong doang)">
+        <input type="number" id="bombInput" placeholder="Jumlah Bom (1-24)" value="3" min="1" max="24">
         <button onclick="predictNow()">GENERATE PATTERN</button>
 
         <div class="grid" id="gridContainer">
@@ -108,14 +110,19 @@
             const gridContainer = document.getElementById('gridContainer');
             gridContainer.innerHTML = '<div style="grid-column: span 5; color: yellow;">CALCULATING...</div>';
 
-            // Ini nembak ke API Python lo tadi
             try {
-                const response = await fetch('/api/index?seed=' + document.getElementById('seedInput').value);
+                const bombs = document.getElementById('bombInput').value || 3;
+                const seed = document.getElementById('seedInput').value || 'default';
+                
+                const response = await fetch('/api/index?bombs=' + bombs + '&seed=' + seed);
                 const data = await response.json();
                 
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'API Error');
+                }
+
                 gridContainer.innerHTML = '';
                 
-                // Bikin grid 5x5
                 for (let i = 0; i < 25; i++) {
                     const cell = document.createElement('div');
                     cell.className = 'cell';
