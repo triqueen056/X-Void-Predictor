@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-VOID // Stake Mines Predictor</title>
+    <style>
+        body {
+            background-color: #0f1923;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1a2c38;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+        h1 {
+            color: #00ff80;
+            font-size: 20px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px #00ff80;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            background-color: #0f1923;
+            border: 1px solid #2a3f4d;
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ff80;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            background-color: #00cc66;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .cell {
+            width: 45px;
+            height: 45px;
+            background-color: #2a3f4d;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .safe {
+            background-color: #00ff80;
+            color: #000;
+            box-shadow: 0 0 10px #00ff80;
+        }
+        .bomb {
+            background-color: #ff3b3b;
+            color: #fff;
+            box-shadow: 0 0 10px #ff3b3b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>X-VOID PREDICTOR</h1>
+        <div class="subtitle">Stake Mines Pattern Generator v2.0</div>
+        
+        <input type="text" id="seedInput" placeholder="Masukin Server Seed Hash (Bohong doang)">
+        <button onclick="predictNow()">GENERATE PATTERN</button>
+
+        <div class="grid" id="gridContainer">
+            <!-- Grid bakal muncul di sini -->
+        </div>
+    </div>
+
+    <script>
+        async function predictNow() {
+            const gridContainer = document.getElementById('gridContainer');
+            gridContainer.innerHTML = '<div style="grid-column: span 5; color: yellow;">CALCULATING...</div>';
+
+            // Ini nembak ke API Python lo tadi
+            try {
+                const response = await fetch('/api/predict?seed=' + document.getElementById('seedInput').value);
+                const data = await response.json();
+                
+                gridContainer.innerHTML = '';
+                
+                // Bikin grid 5x5
+                for (let i = 0; i < 25; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    const row = Math.floor(i / 5);
+                    const col = i % 5;
+                    
+                    if (data.grid[row][col] === 'D') {
+                        cell.classList.add('safe');
+                        cell.innerText = '💎';
+                    } else {
+                        cell.classList.add('bomb');
+                        cell.innerText = '💣';
+                    }
+                    gridContainer.appendChild(cell);
+                }
+            } catch (error) {
+                gridContainer.innerHTML = '<div style="grid-column: span 5; color: red;">SERVER MATI ATAU ERROR</div>';
+            }
+        }
+    </script>
+</body>
+</html>
